@@ -12,7 +12,9 @@ const findOrCreate = require('mongoose-findorcreate');
 
 const app = express();
 
+//public folder is added as the static resource
 app.use(express.static('public'));
+//setting view engine as ejs
 app.set('view engine', 'ejs');
 app.use(
   bodyParser.urlencoded({
@@ -38,7 +40,7 @@ const userSchema = new mongoose.Schema({
   email: String,
   password: String,
   googleId: String,
-  secret: String,
+  // secret: String,
 });
 
 userSchema.plugin(passportLocalMongoose);
@@ -67,7 +69,7 @@ passport.use(
       userProfileURL: 'https://www.googleapis.com/oauth2/v3/userinfo',
     },
     function (accessToken, refreshToken, profile, cb) {
-      console.log(profile);
+      // console.log(profile);
 
       User.findOrCreate({ googleId: profile.id }, function (err, user) {
         return cb(err, user);
