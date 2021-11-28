@@ -40,7 +40,6 @@ const userSchema = new mongoose.Schema({
   email: String,
   password: String,
   googleId: String,
-  // secret: String,
 });
 
 userSchema.plugin(passportLocalMongoose);
@@ -65,7 +64,7 @@ passport.use(
     {
       clientID: process.env.CLIENT_ID,
       clientSecret: process.env.CLIENT_SECRET,
-      callbackURL: 'http://localhost:3000/auth/google/secrets',
+      callbackURL: 'http://localhost:3000/auth/google/samanvay',
       userProfileURL: 'https://www.googleapis.com/oauth2/v3/userinfo',
     },
     function (accessToken, refreshToken, profile, cb) {
@@ -88,11 +87,11 @@ app.get(
 );
 
 app.get(
-  '/auth/google/secrets',
+  '/auth/google/samanvay',
   passport.authenticate('google', { failureRedirect: '/login' }),
   function (req, res) {
-    // Successful authentication, redirect to secrets.
-    res.redirect('/secrets');
+    // Successful authentication, redirect to samanvay.
+    res.redirect('/samanvay');
   }
 );
 
@@ -104,45 +103,13 @@ app.get('/register', function (req, res) {
   res.render('register');
 });
 
-app.get('/secrets', function (req, res) {
-  User.find({ secret: { $ne: null } }, function (err, foundUsers) {
-    if (err) {
-      console.log(err);
-    } else {
-      if (foundUsers) {
-        // res.render("secrets", {usersWithSecrets: foundUsers});
-        res.sendFile(__dirname + '/Own/index.html');
-      }
-    }
-  });
-});
-
-app.get('/submit', function (req, res) {
+app.get('/samanvay', function (req, res) {
   if (req.isAuthenticated()) {
-    res.render('submit');
+    // res.render('submit');
+    res.sendFile(__dirname + '/Own/index.html');
   } else {
     res.redirect('/login');
   }
-});
-
-app.post('/submit', function (req, res) {
-  const submittedSecret = req.body.secret;
-
-  //Once the user is authenticated and their session gets saved, their user details are saved to req.user.
-  // console.log(req.user.id);
-
-  User.findById(req.user.id, function (err, foundUser) {
-    if (err) {
-      console.log(err);
-    } else {
-      if (foundUser) {
-        foundUser.secret = submittedSecret;
-        foundUser.save(function () {
-          res.redirect('/secrets');
-        });
-      }
-    }
-  });
 });
 
 app.get('/logout', function (req, res) {
